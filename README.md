@@ -22,11 +22,11 @@ You can login to the admin panel as the super user by visiting http://localhost:
 
 
 # TODO:
-[ ] Modify styles
-[ ] Coding standard for python/django
-[ ] Database model for URP listings and projects
-[ ] User profile pages
-[ ] RTE integration
-[ ] Comments
-[ ] URP creation form
+- [ ] Modify styles
+- [ ] Coding standard for python/django
+- [ ] Database model for URP listings and projects
+- [ ] User profile pages
+- [ ] RTE integration
+- [ ] Comments
+- [ ] URP creation form
 
