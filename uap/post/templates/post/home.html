@@ -1,0 +1,16 @@
+{% extends 'post/base.html' %}
+{% block content %}
+    {% for urp in urps %}
+    <article class="media content-section">
+        <div class="media-body">
+            <div class="article-metadata">
+                <a class="mr-2" href="#">{{ urp.contactant }}</a>
+                <small class="text-muted">{{ urp.date_posted|date:"F d, Y" }}</small>
+            </div>
+            <h2><a class="article-title" href="#">{{ urp.title }}</a> </h2>
+            <p class="article-content">{{ urp.summary }}</p>
+        </div>
+    </article>
+    {% endfor %}
+
+{% endblock content %}
