@@ -15,6 +15,7 @@ class UapUser(models.Model):
     resume = models.FileField(default='default.pdf', upload_to='resumes')
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
     website = models.URLField()
+    is_student = models.BooleanField(default=True)
 
     def __str__(self):
         return f'{self.user.username}'
