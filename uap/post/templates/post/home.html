@@ -7,7 +7,7 @@
                 <a class="mr-2" href="#">{{ urp.posted_by }}</a>
                 <small class="text-muted">{{ urp.date_posted|date:"F d, Y" }}</small>
             </div>
-            <h2><a class="article-title" href="#">{{ urp.title }}</a> </h2>
+            <h2><a class="article-title" href="{% url 'urp-detail' urp.id %}">{{ urp.title }}</a> </h2>
             <p class="article-content">{{ urp.summary }}</p>
         </div>
     </article>

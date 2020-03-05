@@ -1,0 +1,18 @@
+{% extends 'post/base.html' %}
+{% block content %}
+    <article class="media content-section">
+        <div class="media-body">
+            <div class="article-metadata">
+                <a class="mr-2" href="#">{{ object.posted_by }}</a>
+                <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
+            </div>
+            <h2><a class="article-title" href="#">{{ object.title }}</a> </h2>
+            <p class="article-content">{{ object.summary }}</p>
+            <div>
+                {% comment %} FIXME: rendering with bootstrap can lead to strange styling {% endcomment %}
+                {{ object.description|safe }}
+            </div>
+        </div>
+    </article>
+
+{% endblock content %}
