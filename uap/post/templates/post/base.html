@@ -27,6 +27,7 @@
                 </div>
                 <div class="navbar-nav">
 
+                    {% comment %} show buttons based on user's role {% endcomment %}
                     {% if user.is_authenticated %}
                         {% if user|has_group:"admin" or user|has_group:"faculties" %}
                             <a class="nav-item nav-link" href="{% url 'urp-create' %}">New URP</a>                        
@@ -51,6 +52,7 @@
             </div>
             <div class="col-md-8">
             
+            {% comment %} user for flash messages {% endcomment %}
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert{{ message.tags }}">
