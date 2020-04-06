@@ -1,0 +1,20 @@
+{% extends 'post/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">
+                    New Application
+                </legend>
+                {% comment %} {{ form.media }} {% endcomment %}
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-primary" type="submit">Apply</button>
+                <a class="btn btn-outline-dark ml-3" href="{% url 'uap-home' %}">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

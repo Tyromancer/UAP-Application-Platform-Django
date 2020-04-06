@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import User
 from django.forms.models import modelform_factory
 from ckeditor.widgets import CKEditorWidget
-from .forms import URPCreateForm
-from .models import URP
+from .forms import URPCreateForm, ApplicationCreateForm
+from .models import URP, Application
 
 
 def home(request):
@@ -49,5 +50,44 @@ class URPCreateView(CreateView):
         return super().form_valid(form)
     # fields = ['title', 'content']
 
-    
 
+def application_create(request, pk):
+    urp = get_object_or_404(URP, pk=pk)
+    username = None
+    if request.user.is_authenticated():
+        username = request.user.username
+    else:
+        # TODO: redirect to login page
+        pass
+
+    user = User.objects.get(username=username)
+    
+    if request.method == "POST":
+        form = ApplicationCreateForm(requets.POST)
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.urp = urp
+            application.applicant = user
+            application.status = Application.APPLYING
+
+            application.save()
+
+            # TODO: display message
+            return redirect(f'urp-detail', pk=urp.pk)
+    else:
+        form = ApplicationCreateForm()
+    
+    return render(requets, 'post/application_create.html', {'form':form})
+    
+# class ApplicationCreateView(CreateView):
+#     """Class based view for creating applications for URPs
+#     """
+
+#     model = Application
+#     template_name = 'post/application_create.html'
+#     form_class = ApplicationCreateForm
+
+#     def form_valid(self, form):
+
+#         form.instance.posted_by = self.request.user
+#         return super().form_valid(form)

@@ -57,6 +57,8 @@ class Application(models.Model):
     # the URP the user is applying to
     urp = models.ForeignKey(URP, on_delete=models.CASCADE)
 
+    description = models.CharField(max_length=300, default="")
+
     def __str__(self):
         return f'{self.applicant.username} --{self.status}-> {self.urp.title}'
 
