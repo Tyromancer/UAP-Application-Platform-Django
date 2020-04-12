@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
@@ -14,7 +14,7 @@ def home(request):
     This view will pull all URP entries in the database and list them.
     """
     ctx = {
-        'urps': URP.objects.all(),
+        'urps': URP.objects.all().order_by('-date_posted'),
     }
     return render(request, 'post/home.html', ctx)
 
@@ -54,7 +54,7 @@ class URPCreateView(CreateView):
 def application_create(request, pk):
     urp = get_object_or_404(URP, pk=pk)
     username = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         username = request.user.username
     else:
         # TODO: redirect to login page
@@ -63,7 +63,7 @@ def application_create(request, pk):
     user = User.objects.get(username=username)
     
     if request.method == "POST":
-        form = ApplicationCreateForm(requets.POST)
+        form = ApplicationCreateForm(request.POST)
         if form.is_valid():
             application = form.save(commit=False)
             application.urp = urp
@@ -77,7 +77,7 @@ def application_create(request, pk):
     else:
         form = ApplicationCreateForm()
     
-    return render(requets, 'post/application_create.html', {'form':form})
+    return render(request, 'post/application_create.html', {'form':form})
     
 # class ApplicationCreateView(CreateView):
 #     """Class based view for creating applications for URPs

@@ -11,6 +11,8 @@
             <div>
                 {% comment %} FIXME: rendering with bootstrap can lead to strange styling {% endcomment %}
                 {{ object.description|safe }}
+
+                <a class="btn btn-primary" href="{% url 'urp-apply' object.pk %}">Apply Now!</a>
             </div>
         </div>
     </article>
