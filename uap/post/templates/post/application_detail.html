@@ -1,0 +1,15 @@
+{% extends 'post/base.html' %}
+{% block content %}
+    <article class="media content-section">
+        <div class="media-body">
+            <div class="article-metadata">
+                <small class="text-muted">{{ object.date_created|date:"F d, Y" }}</small>
+            </div>
+            <h2><a class="article-title" href="{% url 'urp-detail' object.urp.pk %}">{{ object.urp.title }}</a> </h2>
+            <div>
+                <p>Status: {{ object.status }}</p>
+            </div>
+        </div>
+    </article>
+
+{% endblock content %}

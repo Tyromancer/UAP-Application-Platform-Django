@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.forms.models import modelform_factory
@@ -51,14 +52,24 @@ class URPCreateView(CreateView):
     # fields = ['title', 'content']
 
 
+class ApplicationDetailView(DetailView):
+    """Class based view for Application detail pages
+    """
+
+    model = Application
+
+
 def application_create(request, pk):
     urp = get_object_or_404(URP, pk=pk)
     username = None
     if request.user.is_authenticated:
+
+        # TODO: show warning message and redirect if user is not a student
         username = request.user.username
     else:
-        # TODO: redirect to login page
-        pass
+        # redirect to login page if user is not logged in
+        messages.warning(request, 'Please login first')
+        return redirect('login')
 
     user = User.objects.get(username=username)
     
@@ -78,6 +89,30 @@ def application_create(request, pk):
         form = ApplicationCreateForm()
     
     return render(request, 'post/application_create.html', {'form':form})
+
+
+def application_status(request):
+    username = None
+    if request.user.is_authenticated:
+
+        # TODO: show warning message and redirect if user is not a student
+        username = request.user.username
+    else:
+        # redirect to login page if user is not logged in
+        messages.warning(request, 'Please login first')
+        return redirect('login')
+    
+    # get current user
+    user = User.objects.get(username=username)
+
+    ctx = {
+        'applications': Application.objects.filter(applicant=user).order_by('-date_created'),
+    }
+
+    return render(request, 'post/application_status.html', ctx)
+
+
+
     
 # class ApplicationCreateView(CreateView):
 #     """Class based view for creating applications for URPs

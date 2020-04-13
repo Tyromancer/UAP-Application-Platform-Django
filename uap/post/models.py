@@ -59,6 +59,8 @@ class Application(models.Model):
 
     description = models.CharField(max_length=300, default="")
 
+    date_created = models.DateTimeField(default=timezone.now)
+
     def __str__(self):
         return f'{self.applicant.username} --{self.status}-> {self.urp.title}'
 

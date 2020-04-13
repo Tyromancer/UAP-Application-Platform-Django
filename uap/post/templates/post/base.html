@@ -32,6 +32,9 @@
                         {% if user|has_group:"admin" or user|has_group:"faculties" %}
                             <a class="nav-item nav-link" href="{% url 'urp-create' %}">New URP</a>                        
                         {% endif %}
+                        {% if user|has_group:"students" %}
+                            <a class="nav-item nav-link" href="{% url 'application-status' %}">Status</a>
+                        {% endif %}
                         <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>                        
                         <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>                        
                     {% else %}

@@ -1,0 +1,25 @@
+{% extends 'post/base.html' %}
+{% block content %}
+    {% for application in applications %}
+    <article class="media content-section">
+        <div class="media-body">
+            <div class="article-metadata">
+                <small class="text-muted">{{ application.date_created|date:"F d, Y" }}</small>
+            </div>
+            <h2><a class="article-title" href="{% url 'application-detail' application.id %}">{{ application.urp.title }}</a> </h2>
+            <p class="article-content">
+                {% if application.status == application.APPLYING %}
+                    <a role="button" class="btn btn-primary btn-lg btn-block active" aria-pressed="true">Applying</a>
+                {% elif application.status == application.ACCEPTED %}
+                    <a role="button" class="btn btn-success btn-lg btn-block active" aria-pressed="true">Accepted</a>
+                {% elif application.status == application.REJECTED %}
+                    <a role="button" class="btn btn-warning btn-lg btn-block active" aria-pressed="true">Rejected</a>
+                {% elif application.status == application.CANCELED %}
+                    <a role="button" class="btn btn-secondary btn-lg btn-block active" aria-pressed="true">Canceled</a>
+                {% endif %}
+            </p>
+        </div>
+    </article>
+    {% endfor %}
+
+{% endblock content %}
