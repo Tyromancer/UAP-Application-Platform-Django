@@ -30,7 +30,8 @@
                     {% comment %} show buttons based on user's role {% endcomment %}
                     {% if user.is_authenticated %}
                         {% if user|has_group:"admin" or user|has_group:"faculties" %}
-                            <a class="nav-item nav-link" href="{% url 'urp-create' %}">New URP</a>                        
+                            <a class="nav-item nav-link" href="{% url 'urp-create' %}">New URP</a>
+                            <a class="nav-item nav-link" href="{% url 'my-urps' %}">My URPs</a>
                         {% endif %}
                         {% if user|has_group:"students" %}
                             <a class="nav-item nav-link" href="{% url 'application-status' %}">Status</a>

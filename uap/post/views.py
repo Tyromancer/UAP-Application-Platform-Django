@@ -112,6 +112,53 @@ def application_status(request):
     return render(request, 'post/application_status.html', ctx)
 
 
+def view_my_urps(request):
+
+    username = None
+    if request.user.is_authenticated:
+        
+        # TODO: show warning message and redirect if user is not faculty
+        username = request.user.username
+    else:
+
+        # redirect to login page if user is not logged in
+        messages.warning(request, 'Please login first')
+        return redirect('login')
+
+    # get current user
+    user = User.objects.get(username=username)
+
+    result = list()
+    urps = URP.objects.filter(posted_by=user).order_by('-date_posted')
+    for urp in urps:
+        result.append( ( urp, len(Application.objects.filter(urp=urp, status=Application.APPLYING)) ) )
+    
+    ctx = {
+        'urps': result
+    }
+
+    return render(request, 'post/my_urps.html', ctx)
+
+
+def view_applications(request, pk):
+
+    urp = get_object_or_404(URP, pk=pk)
+
+    if request.user.is_authenticated:
+
+        # TODO: show warning message and redirect if user is not faculty
+        pass
+    else:
+
+        # redirect to login page if user is not logged in
+        messages.warning(request, 'Please login first')
+        return redirect('login')
+
+    ctx = {
+        'applications': Application.objects.filter(urp=urp, status=Application.APPLYING).order_by('date_created')
+    }
+
+    return render(request, 'post/view_applications.html', ctx)
 
     
 # class ApplicationCreateView(CreateView):
