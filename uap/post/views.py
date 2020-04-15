@@ -3,9 +3,10 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.forms.models import modelform_factory
 from ckeditor.widgets import CKEditorWidget
-from .forms import URPCreateForm, ApplicationCreateForm
+from .forms import URPCreateForm, ApplicationCreateForm, ApplicationManageForm
 from .models import URP, Application
 
 
@@ -32,7 +33,7 @@ class URPDetailView(DetailView):
     model = URP
 
 
-class URPCreateView(CreateView):
+class URPCreateView(LoginRequiredMixin, CreateView):
     """Class based view for URP create pages
 
     Attributes:
@@ -52,7 +53,7 @@ class URPCreateView(CreateView):
     # fields = ['title', 'content']
 
 
-class ApplicationDetailView(DetailView):
+class ApplicationDetailView(LoginRequiredMixin, DetailView):
     """Class based view for Application detail pages
     """
 
@@ -91,19 +92,10 @@ def application_create(request, pk):
     return render(request, 'post/application_create.html', {'form':form})
 
 
+@login_required
 def application_status(request):
-    username = None
-    if request.user.is_authenticated:
-
-        # TODO: show warning message and redirect if user is not a student
-        username = request.user.username
-    else:
-        # redirect to login page if user is not logged in
-        messages.warning(request, 'Please login first')
-        return redirect('login')
     
-    # get current user
-    user = User.objects.get(username=username)
+    user = request.user
 
     ctx = {
         'applications': Application.objects.filter(applicant=user).order_by('-date_created'),
@@ -112,21 +104,10 @@ def application_status(request):
     return render(request, 'post/application_status.html', ctx)
 
 
+@login_required
 def view_my_urps(request):
 
-    username = None
-    if request.user.is_authenticated:
-        
-        # TODO: show warning message and redirect if user is not faculty
-        username = request.user.username
-    else:
-
-        # redirect to login page if user is not logged in
-        messages.warning(request, 'Please login first')
-        return redirect('login')
-
-    # get current user
-    user = User.objects.get(username=username)
+    user = request.user
 
     result = list()
     urps = URP.objects.filter(posted_by=user).order_by('-date_posted')
@@ -140,6 +121,7 @@ def view_my_urps(request):
     return render(request, 'post/my_urps.html', ctx)
 
 
+@login_required
 def view_applications(request, pk):
 
     urp = get_object_or_404(URP, pk=pk)
@@ -159,6 +141,36 @@ def view_applications(request, pk):
     }
 
     return render(request, 'post/view_applications.html', ctx)
+
+
+@login_required
+def view_and_manage_application(request, pk):
+
+    # TODO: check if user is faculty
+    application = get_object_or_404(Application, pk=pk)
+
+    if request.method == 'POST':
+        form = ApplicationManageForm(request.POST)
+        if form.is_valid():
+            if application.status == Application.APPLYING:
+                if form.cleaned_data['action'] == 'A':
+                    application.status = Application.ACCEPTED
+                    application.save()
+
+                elif form.cleaned_data['action'] == 'R':
+                    application.status = Application.REJECTED
+                    application.save()
+
+                messages.success(request, 'Success!')
+            return redirect(request.get_full_path())
+
+    form = ApplicationManageForm()
+    ctx = {
+        'application':application,
+        'form':form,
+    }
+    return render(request, 'post/manage_application.html', context=ctx)
+
 
     
 # class ApplicationCreateView(CreateView):

@@ -5,9 +5,10 @@
         <div class="card-body">
             <h2 class="card-title">{{ application.applicant.first_name }} {{ application.applicant.last_name }}</h2>
             <h6 class="card-subtitle mb-2 text-muted">{{ application.date_created|date:"F d, Y" }}</h6>
-            <p class="card-text">Statement of interest: {{ application.description|safe }}</p>
+            <a href="{% url 'manage-application' application.id %}" class="btn btn-outline-primary">Details</a>
+            {% comment %} <p class="card-text">Statement of interest: {{ application.description|safe }}</p>
             <a href="#" class="btn btn-outline-success">Accept</a>
-            <a href="#" class="btn btn-outline-danger">Reject</a>
+            <a href="#" class="btn btn-outline-danger">Reject</a> {% endcomment %}
         </div>
     </div>
     {% endfor %}

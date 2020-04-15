@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import URPDetailView, URPCreateView, ApplicationDetailView, application_create, application_status, view_my_urps, view_applications
+from .views import URPDetailView, URPCreateView, ApplicationDetailView, application_create, application_status, view_my_urps, view_applications, view_and_manage_application
 
 
 urlpatterns = [
@@ -11,6 +11,7 @@ urlpatterns = [
     path('urp/<int:pk>', URPDetailView.as_view(), name='urp-detail'),
     path('application/<int:pk>', ApplicationDetailView.as_view(), name='application-detail'),
     path('application/list/<int:pk>', view_applications, name='view-applications'),
+    path('application/manage/<int:pk>', view_and_manage_application, name='manage-application'),
     path('urp/new/', URPCreateView.as_view(), name='urp-create'),
     path('urp/<int:pk>/apply/', application_create, name='urp-apply'),
 ]
