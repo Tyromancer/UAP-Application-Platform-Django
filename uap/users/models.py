@@ -3,9 +3,18 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db import models
 from ckeditor.fields import RichTextField
+from django.core.validators import EmailValidator
 from PIL import Image
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 
+def validate_email(email):
+    if not FacultyEmail.objects.filter(email=email).exists():
+        if not email.strip().endswith('@rpi.edu'):
+            raise ValidationError(
+                _(f'{email} is not a valid rpi email address')
+            )
 
 # TODO: for both profiles, add relations to URPs
 
@@ -24,12 +33,13 @@ class UapUser(models.Model):
     """
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-    phone = models.CharField(max_length=20, null=True)
+    phone = models.CharField(max_length=20, default='')
     bio = RichTextField(default='')
-    resume = models.FileField(default='default.pdf', upload_to='resumes')
-    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    resume = models.FileField(blank=True, upload_to='resumes')
+    image = models.ImageField(default='profile_pics/default.png', upload_to='profile_pics')
     website = models.URLField()
     is_student = models.BooleanField(default=True)
+    email_confirmed = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
@@ -46,6 +56,13 @@ class UapUser(models.Model):
             output_size = (300, 300)
             img.thumbnail(output_size)
             img.save(self.image.path)
+
+
+class FacultyEmail(models.Model):
+    email = models.EmailField(max_length=254)
+
+    def __str__(self):
+        return f'{self.email}'
 
 # class FacultyProfile(models.Model):
 #     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)

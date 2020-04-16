@@ -6,7 +6,7 @@
             <div class="article-metadata">
                 <small class="text-muted">{{ application.date_created|date:"F d, Y" }}</small>
             </div>
-            <h2><a class="article-title" href="#">{{ application.applicant.first_name }} {{ application.applicant.last_name }} </a> </h2>
+            <h2><a class="article-title" href="{% url 'profile' application.applicant.id %}">{{ application.applicant.first_name }} {{ application.applicant.last_name }} </a> </h2>
             <div>
                 <p>Statement of interest:</p>
                 <p>{{ application.description|safe }}</p>

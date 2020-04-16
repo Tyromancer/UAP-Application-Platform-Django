@@ -60,7 +60,7 @@
             {% comment %} user for flash messages {% endcomment %}
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert{{ message.tags }}">
+                    <div class="alert alert-{{ message.tags }}">
                         {{ message }}
                     </div>
                 {% endfor %}

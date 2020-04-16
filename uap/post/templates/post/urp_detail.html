@@ -3,16 +3,26 @@
     <article class="media content-section">
         <div class="media-body">
             <div class="article-metadata">
-                <a class="mr-2" href="#">{{ object.posted_by }}</a>
-                <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
+                <a class="mr-2" href="#">{{ urp.posted_by }}</a>
+                <small class="text-muted">{{ urp.date_posted|date:"F d, Y" }}</small>
             </div>
-            <h2><a class="article-title" href="#">{{ object.title }}</a> </h2>
-            <p class="article-content">{{ object.summary }}</p>
+            <h2><a class="article-title" href="#">{{ urp.title }}</a> </h2>
+            <p class="article-content">{{ urp.summary }}</p>
             <div>
                 {% comment %} FIXME: rendering with bootstrap can lead to strange styling {% endcomment %}
-                {{ object.description|safe }}
+                {{ urp.description|safe }}
 
-                <a class="btn btn-primary" href="{% url 'urp-apply' object.pk %}">Apply Now!</a>
+                {% if user.is_authenticated %}
+                    {% if user.uapuser.is_student %}
+                        {% if not applied %}
+                            <a class="btn btn-primary" href="{% url 'urp-apply' urp.pk %}">Apply Now!</a>
+                        {% else %}
+                            <a class="btn btn-primary" href="{% url 'application-status' %}">Application Status</a>
+                        {% endif %}
+                    {% else %}
+                        <a class="btn btn-primary" href="{% url 'my-urps' %}">See applications</a>
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
     </article>

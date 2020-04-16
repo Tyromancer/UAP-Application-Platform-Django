@@ -5,10 +5,10 @@ from .models import UapUser
 
 
 @receiver(post_save, sender=User)
-def create_UapUser(sender, instance, created, **kwargs):
+def create_uapuser(sender, instance, created, **kwargs):
     if created:
         UapUser.objects.create(user=instance)
 
 @receiver(post_save, sender=User)
-def save_profile(sender, instance, **kwargs):
+def save_uapuser(sender, instance, **kwargs):
     instance.uapuser.save()

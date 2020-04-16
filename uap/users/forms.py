@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import UapUser
+from django.core.validators import EmailValidator
+from .models import UapUser, validate_email
 
 
 class UserRegisterForm(UserCreationForm):
@@ -11,7 +12,9 @@ class UserRegisterForm(UserCreationForm):
         email (forms.EmailField): requires the users to enter their email addresses.
         role: (forms.ChoiceField): requires the student to choose a role from the given set of roles (Student, Faculty) 
     """
-    email = forms.EmailField(required=True)
+    first_name = forms.CharField(max_length=35, required=True)
+    last_name = forms.CharField(max_length=35, required=True)
+    email = forms.EmailField(max_length=254, required=True)
 
     # role of user, either Studeng or Faculty
     role = forms.ChoiceField( choices=[ ('S','Student'), ('F', 'Faculty') ], required=True )
@@ -32,6 +35,9 @@ class UserUpdateForm(forms.ModelForm):
 
 class UapUserUpdateForm(forms.ModelForm):
     
+    phone = forms.CharField(max_length=20, required=False)
+    bio = forms.CharField(required=False)
+    website = forms.URLField(required=False)
     class Meta:
         model = UapUser
         fields = ['phone', 'bio', 'image', 'resume', 'website']

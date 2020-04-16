@@ -32,6 +32,24 @@ class URPDetailView(DetailView):
     """
     model = URP
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['applied'] = Application.filter()
+
+def urp_detail_view(request, pk):
+    urp = get_object_or_404(URP, pk=pk)
+    ctx = {
+        'urp': urp,
+    }
+
+    if request.user.is_authenticated:
+        if request.user.uapuser.is_student:
+            ctx['applied'] = Application.objects.filter(applicant=request.user, urp=urp).exists()
+        else:
+            ctx['applied'] = False
+
+    return render(request, 'post/urp_detail.html', context=ctx)
+
 
 class URPCreateView(LoginRequiredMixin, CreateView):
     """Class based view for URP create pages
@@ -61,6 +79,11 @@ class ApplicationDetailView(LoginRequiredMixin, DetailView):
 
 
 def application_create(request, pk):
+
+    if not request.user.uapuser.is_student:
+        messages.warning(request, 'You do not have the permissions to view this page')
+        return redirect('uap-home')
+
     urp = get_object_or_404(URP, pk=pk)
     username = None
     if request.user.is_authenticated:
@@ -94,7 +117,9 @@ def application_create(request, pk):
 
 @login_required
 def application_status(request):
-    
+    if not request.user.uapuser.is_student:
+        messages.warning(request, 'You do not have the permissions to view this page')
+        return redirect('uap-home')
     user = request.user
 
     ctx = {
@@ -106,13 +131,19 @@ def application_status(request):
 
 @login_required
 def view_my_urps(request):
+    if request.user.uapuser.is_student:
+        messages.warning(request, 'You do not have the permissions to view this page')
+        return redirect('uap-home')
 
     user = request.user
-
     result = list()
     urps = URP.objects.filter(posted_by=user).order_by('-date_posted')
+
     for urp in urps:
-        result.append( ( urp, len(Application.objects.filter(urp=urp, status=Application.APPLYING)) ) )
+        num_active = len(Application.objects.filter(urp=urp, status=Application.APPLYING))
+        num_accepted = len(Application.objects.filter(urp=urp, status=Application.ACCEPTED))
+        num_rejected = len(Application.objects.filter(urp=urp, status=Application.REJECTED))
+        result.append( ( urp, num_active, num_accepted, num_rejected ) )
     
     ctx = {
         'urps': result
@@ -122,19 +153,12 @@ def view_my_urps(request):
 
 
 @login_required
-def view_applications(request, pk):
+def view_active_applications(request, pk):
+    if request.user.uapuser.is_student:
+        messages.warning(request, 'You do not have the permissions to view this page')
+        return redirect('uap-home')
 
     urp = get_object_or_404(URP, pk=pk)
-
-    if request.user.is_authenticated:
-
-        # TODO: show warning message and redirect if user is not faculty
-        pass
-    else:
-
-        # redirect to login page if user is not logged in
-        messages.warning(request, 'Please login first')
-        return redirect('login')
 
     ctx = {
         'applications': Application.objects.filter(urp=urp, status=Application.APPLYING).order_by('date_created')
@@ -144,9 +168,39 @@ def view_applications(request, pk):
 
 
 @login_required
+def view_accepted_applications(request, pk):
+    if request.user.uapuser.is_student:
+        messages.warning(request, 'You do not have the permissions to view this page')
+        return redirect('uap-home')
+    urp = get_object_or_404(URP, pk=pk)
+
+    ctx = {
+        'applications': Application.objects.filter(urp=urp, status=Application.ACCEPTED).order_by('date_created')
+    }
+    return render(request, 'post/view_applications.html', ctx)
+
+
+@login_required
+def view_rejected_applications(request, pk):
+    if request.user.uapuser.is_student:
+        messages.warning(request, 'You do not have the permissions to view this page')
+        return redirect('uap-home')
+    urp = get_object_or_404(URP, pk=pk)
+
+    ctx = {
+        'applications': Application.objects.filter(urp=urp, status=Application.REJECTED).order_by('date_created')
+    }
+    return render(request, 'post/view_applications.html', ctx)
+
+
+@login_required
 def view_and_manage_application(request, pk):
 
     # TODO: check if user is faculty
+    if request.user.uapuser.is_student:
+        messages.warning(request, 'You do not have the permissions to view this page')
+        return redirect('uap-home')
+    
     application = get_object_or_404(Application, pk=pk)
 
     if request.method == 'POST':

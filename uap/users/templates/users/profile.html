@@ -36,6 +36,10 @@
             {% if has_resume %}
                 <a class='btn btn-outline-primary' href="{{ profile.resume.url }}">view resume</a>
             {% endif %}
+
+            {% if user.id == usr.id %}
+            <a class='btn btn-outline-primary' href={% url 'update-profile' %}>Update Profile</a>
+            {% endif %}
         </div>
     </article>
 {% endblock content %}

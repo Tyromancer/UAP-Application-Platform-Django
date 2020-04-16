@@ -1,13 +1,18 @@
 {% extends 'post/base.html' %}
 {% block content %}
-    {% for urp, num_active in urps %}
+    {% for urp, num_active, num_accepted, num_rejected in urps %}
     <div class="card mb-2">
         <div class="card-body">
             <h2 class="card-title">{{ urp.title }}</h2>
             <h6 class="card-subtitle mb-2 text-muted">{{ urp.date_posted|date:"F d, Y" }}</h6>
             <p class="card-text">Number of active applications: {{ num_active }}</p>
+            <p class="card-text">Number of accepted applications: {{ num_accepted }}</p>
+            <p class="card-text">Number of rejected applications: {{ num_rejected }}</p>            
             <a href="{% url 'urp-detail' urp.id %}" class="btn btn-outline-info">Details</a>
             <a href="{% url 'view-applications' urp.id %}" class="btn btn-outline-primary">View Applications</a>
+            <a href="{% url 'view-accepted-applications' urp.id %}" class="btn btn-outline-primary">View Accepted Applications</a>
+            <a href="{% url 'view-rejected-applications' urp.id %}" class="btn btn-outline-primary">View Applications</a>
+            
         </div>
     </div>
     {% endfor %}
