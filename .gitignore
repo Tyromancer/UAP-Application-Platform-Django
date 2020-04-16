@@ -1,6 +1,9 @@
 lib
 bin
 pyvenv.cfg
+*.png
+*.jpg
+*.pdf
 
 # Django #
 *.log
@@ -118,3 +121,5 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+uap/.DS_Store
+.DS_Store

@@ -24,7 +24,6 @@ class UapUser(models.Model):
     """
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-    email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20, null=True)
     bio = RichTextField(default='')
     resume = models.FileField(default='default.pdf', upload_to='resumes')
@@ -33,14 +32,14 @@ class UapUser(models.Model):
     is_student = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'{self.user.first_name} {self.user.lastname}'
+        return f'{self.user.first_name} {self.user.last_name}'
 
-    def save(self):
+    def save(self, *args, **kwargs):
         """Defines the behavior when an UapUser instance is saved.
 
         First call save() from parent class, then crop and save image.
         """
-        super().save()
+        super().save(*args, **kwargs)
 
         img = Image.open(self.image.path)
         if img.height > 300 or img.width > 300:
