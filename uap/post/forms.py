@@ -5,6 +5,7 @@ from .models import URP, Application
 
 
 class URPCreateForm(ModelForm):
+    """Form for URP creation"""
     class Meta:
         model = URP
         fields = ['title', 'summary', 'description']
@@ -13,6 +14,7 @@ class URPCreateForm(ModelForm):
 
 
 class ApplicationCreateForm(ModelForm):
+    """Form for Application creation"""
     class Meta:
         model = Application
         fields = ['description']
@@ -21,6 +23,7 @@ class ApplicationCreateForm(ModelForm):
 
 
 class ApplicationManageForm(forms.Form):
+    """Form for updating application status: Accept or Reject"""
     ACTIONS = (
         ('A', "Accept"),
         ('R', "Reject"),

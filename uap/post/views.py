@@ -27,21 +27,16 @@ def about(request):
     return render(request, 'post/about.html')
 
 
-class URPDetailView(DetailView):
-    """Class based view for URP detail pages
-    """
-    model = URP
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['applied'] = Application.filter()
-
 def urp_detail_view(request, pk):
+    """Renders the URP detail page
+    """
+
     urp = get_object_or_404(URP, pk=pk)
     ctx = {
         'urp': urp,
     }
 
+    # if user is logged in as a student, check if user has already applied
     if request.user.is_authenticated:
         if request.user.uapuser.is_student:
             ctx['applied'] = Application.objects.filter(applicant=request.user, urp=urp).exists()
@@ -59,6 +54,7 @@ class URPCreateView(LoginRequiredMixin, CreateView):
         template_name (str): path of template used for this view
         form_class: class to be used for creating forms for this view
     """
+
     model = URP
     template_name = 'post/urp_create.html'
     form_class = URPCreateForm
@@ -68,7 +64,6 @@ class URPCreateView(LoginRequiredMixin, CreateView):
         """
         form.instance.posted_by = self.request.user 
         return super().form_valid(form)
-    # fields = ['title', 'content']
 
 
 class ApplicationDetailView(LoginRequiredMixin, DetailView):
@@ -78,28 +73,25 @@ class ApplicationDetailView(LoginRequiredMixin, DetailView):
     model = Application
 
 
+@login_required
 def application_create(request, pk):
+    """Renders application creation page. Login required.
 
+    Attribute:
+        pk: URP id (primary key of URP instance)
+    """
     if not request.user.uapuser.is_student:
         messages.warning(request, 'You do not have the permissions to view this page')
         return redirect('uap-home')
 
     urp = get_object_or_404(URP, pk=pk)
-    username = None
-    if request.user.is_authenticated:
-
-        # TODO: show warning message and redirect if user is not a student
-        username = request.user.username
-    else:
-        # redirect to login page if user is not logged in
-        messages.warning(request, 'Please login first')
-        return redirect('login')
-
-    user = User.objects.get(username=username)
+    user = request.user
     
     if request.method == "POST":
         form = ApplicationCreateForm(request.POST)
         if form.is_valid():
+
+            # save form data to db
             application = form.save(commit=False)
             application.urp = urp
             application.applicant = user
@@ -107,7 +99,7 @@ def application_create(request, pk):
 
             application.save()
 
-            # TODO: display message
+            messages.success(request, 'Application created')
             return redirect(f'urp-detail', pk=urp.pk)
     else:
         form = ApplicationCreateForm()
@@ -117,9 +109,13 @@ def application_create(request, pk):
 
 @login_required
 def application_status(request):
+    """Renders the application status page for students. Login required.
+    """
+
     if not request.user.uapuser.is_student:
         messages.warning(request, 'You do not have the permissions to view this page')
         return redirect('uap-home')
+
     user = request.user
 
     ctx = {
@@ -131,6 +127,9 @@ def application_status(request):
 
 @login_required
 def view_my_urps(request):
+    """Displays a list of URPs created by the user. Login required.
+    """
+
     if request.user.uapuser.is_student:
         messages.warning(request, 'You do not have the permissions to view this page')
         return redirect('uap-home')
@@ -139,6 +138,7 @@ def view_my_urps(request):
     result = list()
     urps = URP.objects.filter(posted_by=user).order_by('-date_posted')
 
+    # get number of active / accepted / rejected applications
     for urp in urps:
         num_active = len(Application.objects.filter(urp=urp, status=Application.APPLYING))
         num_accepted = len(Application.objects.filter(urp=urp, status=Application.ACCEPTED))
@@ -154,6 +154,12 @@ def view_my_urps(request):
 
 @login_required
 def view_active_applications(request, pk):
+    """Displays list of active applications to a specific URP. Login required.
+
+    Parameters:
+        pk: URP id (primary key of URP instance)
+    """
+
     if request.user.uapuser.is_student:
         messages.warning(request, 'You do not have the permissions to view this page')
         return redirect('uap-home')
@@ -169,9 +175,15 @@ def view_active_applications(request, pk):
 
 @login_required
 def view_accepted_applications(request, pk):
+    """Displays list of accepted applications of a specific URP. Login required.
+
+    Parameters:
+        pk: URP id (primary key of URP instance)
+    """
     if request.user.uapuser.is_student:
         messages.warning(request, 'You do not have the permissions to view this page')
         return redirect('uap-home')
+
     urp = get_object_or_404(URP, pk=pk)
 
     ctx = {
@@ -182,6 +194,12 @@ def view_accepted_applications(request, pk):
 
 @login_required
 def view_rejected_applications(request, pk):
+    """Displays list of rejected applications of a specific URP. Login required.
+
+    Parameters:
+        pk: URP id (primary key of URP instance)
+    """
+
     if request.user.uapuser.is_student:
         messages.warning(request, 'You do not have the permissions to view this page')
         return redirect('uap-home')
@@ -195,8 +213,11 @@ def view_rejected_applications(request, pk):
 
 @login_required
 def view_and_manage_application(request, pk):
+    """Displays the detail page for a specific application. Login required.
 
-    # TODO: check if user is faculty
+    Parameters:
+        pk: Application id (primary key of Application instance)
+    """
     if request.user.uapuser.is_student:
         messages.warning(request, 'You do not have the permissions to view this page')
         return redirect('uap-home')
@@ -204,13 +225,20 @@ def view_and_manage_application(request, pk):
     application = get_object_or_404(Application, pk=pk)
 
     if request.method == 'POST':
+
+        # Http method: POST:
+        # create form instance and populate with request form data
         form = ApplicationManageForm(request.POST)
+
         if form.is_valid():
             if application.status == Application.APPLYING:
+
+                # A --> Accepted
                 if form.cleaned_data['action'] == 'A':
                     application.status = Application.ACCEPTED
                     application.save()
 
+                # R --> Rejected
                 elif form.cleaned_data['action'] == 'R':
                     application.status = Application.REJECTED
                     application.save()
@@ -224,18 +252,3 @@ def view_and_manage_application(request, pk):
         'form':form,
     }
     return render(request, 'post/manage_application.html', context=ctx)
-
-
-    
-# class ApplicationCreateView(CreateView):
-#     """Class based view for creating applications for URPs
-#     """
-
-#     model = Application
-#     template_name = 'post/application_create.html'
-#     form_class = ApplicationCreateForm
-
-#     def form_valid(self, form):
-
-#         form.instance.posted_by = self.request.user
-#         return super().form_valid(form)
