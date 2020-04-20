@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import URPDetailView, URPCreateView, ApplicationDetailView, application_create, application_status, view_my_urps, view_active_applications, view_and_manage_application, view_accepted_applications, view_rejected_applications, urp_detail_view
+from .views import URPCreateView, ApplicationDetailView, application_create, application_status, view_my_urps, view_active_applications, view_and_manage_application, view_accepted_applications, view_rejected_applications, urp_detail_view
 
 
 urlpatterns = [
