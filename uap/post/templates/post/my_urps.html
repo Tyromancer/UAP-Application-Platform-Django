@@ -10,8 +10,8 @@
             <p class="card-text">Number of rejected applications: {{ num_rejected }}</p>            
             <a href="{% url 'urp-detail' urp.id %}" class="btn btn-outline-info">Details</a>
             <a href="{% url 'view-applications' urp.id %}" class="btn btn-outline-primary">View Applications</a>
-            <a href="{% url 'view-accepted-applications' urp.id %}" class="btn btn-outline-primary">View Accepted Applications</a>
-            <a href="{% url 'view-rejected-applications' urp.id %}" class="btn btn-outline-primary">View Applications</a>
+            <a href="{% url 'view-accepted-applications' urp.id %}" class="btn btn-outline-success">View Accepted Applications</a>
+            <a href="{% url 'view-rejected-applications' urp.id %}" class="btn btn-outline-secondary">View Rejected Applications</a>
             
         </div>
     </div>
