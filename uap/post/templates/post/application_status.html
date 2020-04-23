@@ -1,4 +1,9 @@
 {% extends 'post/base.html' %}
+
+{% block sidebar %}
+    <h3>Application status</h3>
+{% endblock sidebar %}
+
 {% block content %}
     {% for application in applications %}
     <article class="media content-section">

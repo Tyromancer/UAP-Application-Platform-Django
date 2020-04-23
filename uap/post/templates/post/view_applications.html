@@ -1,4 +1,9 @@
 {% extends 'post/base.html' %}
+
+{% block sidebar %}
+    <h3>Applicants</h3>
+{% endblock sidebar %}
+
 {% block content %}
     {% for application in applications %}
     <div class="card mb-2">

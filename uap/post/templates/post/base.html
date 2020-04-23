@@ -51,8 +51,10 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="content-section">
-                    <h3>Sidebar</h3>
-                    <p class='text-muted'>Put notifications or other stuff in the sidebar</p>
+                    {% block sidebar %}
+                        <h3>Sidebar</h3>
+                        <p class='text-muted'>Put notifications or other stuff in the sidebar</p>
+                    {% endblock sidebar %}
                 </div>
             </div>
             <div class="col-md-8">

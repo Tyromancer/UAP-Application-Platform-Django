@@ -1,4 +1,9 @@
 {% extends 'post/base.html' %}
+
+{% block sidebar %}
+    <h3>URPs posted by me</h3>
+{% endblock sidebar %}
+
 {% block content %}
     {% for urp, num_active, num_accepted, num_rejected in urps %}
     <div class="card mb-2">
