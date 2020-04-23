@@ -14,9 +14,11 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.urls import reverse_lazy
 
+from post.models import URP
+
 from .tokens import account_activation_token
 from .models import UapUser, FacultyEmail
-from .forms import UserRegisterForm, UapUserUpdateForm, UserUpdateForm
+from .forms import UserRegisterForm, UapStudentUpdateForm, UapFacultyUpdateForm, UserUpdateForm
 
 
 def register(request):
@@ -149,7 +151,12 @@ def update_profile(request):
         # create the user update form (u_form) and profile update form (p_form), and
         # populate them with form data
         u_form = UserUpdateForm(request.POST, instance=request.user)
-        p_form = UapUserUpdateForm(request.POST, request.FILES, instance=request.user.uapuser)
+
+        if request.user.uapuser.is_student:
+            p_form = UapStudentUpdateForm(request.POST, request.FILES, instance=request.user.uapuser)
+        else:
+            p_form = UapFacultyUpdateForm(request.POST, request.FILES, instance=request.user.uapuser)
+
 
         if u_form.is_valid() and p_form.is_valid():
 
@@ -163,7 +170,10 @@ def update_profile(request):
         # GET request:
         # create empty user update form and UAP user update form
         u_form = UserUpdateForm(instance=request.user)
-        p_form = UapUserUpdateForm(instance=request.user.uapuser)
+        if request.user.uapuser.is_student:
+            p_form = UapStudentUpdateForm(instance=request.user.uapuser)
+        else:
+            p_form = UapFacultyUpdateForm(instance=request.user.uapuser)
 
     ctx = {
         'u_form': u_form,
@@ -190,7 +200,9 @@ def profile(request, pk):
         'bio_length': len(profile.bio),
         'phone_length': len(profile.phone),
         'has_resume': bool(profile.resume),
-        'website_length': len(profile.website)
+        'website_length': len(profile.website),
+        'urps': URP.objects.filter(posted_by=user).order_by('-date_posted'),
+        'num_urps': URP.objects.filter(posted_by=user).count()
     }
     return render(request, 'users/profile.html', context=ctx)
 

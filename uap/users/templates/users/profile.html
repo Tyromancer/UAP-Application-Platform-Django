@@ -1,14 +1,20 @@
 {% extends "post/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <article class="media content-section">
+    <div class="content-section">
+        <div class="media">
+        <img class="rounded-circle account-img" src="{{ profile.image.url }}" />
         <div class="media-body">
             <div class="article-metadata">
                 <a class="mr-2" href="#">{{ usr.get_username }}</a>
                 <small class="text-muted">{{ usr.email }}</small>
             </div>
-            <h2><a class="article-title" href="#">{{ usr.first_name }} {{ usr.last_name }}</a>
-            <img class="mb-2" src="{{ profile.image.url }}">{{ usr.get_fullname }}</img>
+            <h2 class="account-heading">{{ usr.first_name }} {{ usr.last_name }}</h2>
+            {% if profile.is_student %}
+                <p class="small text-muted">Student</p>
+            {% else %}
+                <p class="small text-muted">Faculty</p>
+            {% endif %}
             {% if phone_length > 0 %}
                 <div class="">
                     
@@ -37,9 +43,26 @@
                 <a class='btn btn-outline-primary' href="{{ profile.resume.url }}">view resume</a>
             {% endif %}
 
+            {% if not profile.is_student %}
+                {% if num_urps != 0 %}
+                <div>
+                    <h5>URPs:</h5>
+                    {% for urp in urps %}
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h2 class="card-title"><a href="{% url 'urp-detail' urp.id %}">{{ urp.title }}</a></h2>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ urp.date_posted|date:"F d, Y" }}</h6>                    
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endif %}
+
             {% if user.id == usr.id %}
             <a class='btn btn-outline-primary' href={% url 'update-profile' %}>Update Profile</a>
             {% endif %}
         </div>
-    </article>
+    </div>
+    </div>
 {% endblock content %}

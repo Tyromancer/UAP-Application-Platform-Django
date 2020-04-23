@@ -6,11 +6,20 @@ from .models import URP, Application
 
 class URPCreateForm(ModelForm):
     """Form for URP creation"""
+
+    description = CharField(widget=CKEditorWidget())
     class Meta:
         model = URP
         fields = ['title', 'summary', 'description']
-    
+
+
+class URPUpdateForm(ModelForm):
+    """Form for updating/editing URPs"""
+
     description = CharField(widget=CKEditorWidget())
+    class Meta:
+        model = URP
+        fields = ['summary', 'description']
 
 
 class ApplicationCreateForm(ModelForm):

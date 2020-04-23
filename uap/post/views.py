@@ -1,12 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.forms.models import modelform_factory
 from ckeditor.widgets import CKEditorWidget
-from .forms import URPCreateForm, ApplicationCreateForm, ApplicationManageForm
+from .forms import URPCreateForm, URPUpdateForm, ApplicationCreateForm, ApplicationManageForm
 from .models import URP, Application
 
 
@@ -41,36 +41,80 @@ def urp_detail_view(request, pk):
         if request.user.uapuser.is_student:
             ctx['applied'] = Application.objects.filter(applicant=request.user, urp=urp).exists()
         else:
-            ctx['applied'] = False
+            ctx['applied'] = True
 
     return render(request, 'post/urp_detail.html', context=ctx)
 
 
-class URPCreateView(LoginRequiredMixin, CreateView):
-    """Class based view for URP create pages
+@login_required
+def urp_update_view(request, pk):
 
-    Attributes:
-        model: sets the model to URP
-        template_name (str): path of template used for this view
-        form_class: class to be used for creating forms for this view
-    """
+    if request.user.uapuser.is_student:
+        messages.warning(request, 'You do not have the permission to view this page')
+        return redirect('uap-home')
+    
+    urp = get_object_or_404(URP, pk=pk)
 
-    model = URP
-    template_name = 'post/urp_create.html'
-    form_class = URPCreateForm
+    if urp.posted_by != request.user:
+        messages.warning(request, 'You do not have the permission to view this page')
+        return redirect('uap-home')
+    
+    if request.method == 'POST':
+        form = URPUpdateForm(request.POST)
+        if form.is_valid():
 
-    def form_valid(self, form):
-        """Check if the form is valid
-        """
-        form.instance.posted_by = self.request.user 
-        return super().form_valid(form)
+            urp.summary = form.cleaned_data['summary']
+            urp.description = form.cleaned_data['description']
+
+            urp.save()
+            
+            messages.success(request, 'URP updated')
+            return redirect('urp-detail', pk=urp.id)
+
+    else:
+        form = URPUpdateForm(instance=urp)
+        ctx = { 
+            'form': form,
+            'id': pk,
+         }
+        return render(request, 'post/urp_update.html', context=ctx)
 
 
-class ApplicationDetailView(LoginRequiredMixin, DetailView):
-    """Class based view for Application detail pages
-    """
 
-    model = Application
+@login_required
+def urp_create_view(request):
+
+    if request.user.uapuser.is_student:
+        messages.warning(request, 'You do not have the permissions to view this page')
+        return redirect('uap-home')
+
+    if request.method == 'POST':
+        form = URPCreateForm(request.POST)
+        if form.is_valid():
+
+            urp = form.save(commit=False)
+            urp.posted_by = request.user
+            urp.save()
+
+            messages.success(request, 'URP created')
+            return redirect('urp-detail', pk=urp.pk)
+        else:
+            messages.warning(request, 'Error when creating URP')
+            return redirect('urp-create')
+    
+    form = URPCreateForm()
+    return render(request, 'post/urp_create.html', context={'form':form})
+    
+
+@login_required
+def application_detail_view(request, pk):
+
+    if not request.user.uapuser.is_student:
+        messages.warning(request, 'You do not have the permissions to view the page')
+        return redirect('uap-home')
+
+    application = get_object_or_404(Application, pk=pk)
+    return render(request, 'post/application_detail.html', context={'application': application})
 
 
 @login_required

@@ -3,11 +3,11 @@
     <article class="media content-section">
         <div class="media-body">
             <div class="article-metadata">
-                <small class="text-muted">{{ object.date_created|date:"F d, Y" }}</small>
+                <small class="text-muted">{{ application.date_created|date:"F d, Y" }}</small>
             </div>
-            <h2><a class="article-title" href="{% url 'urp-detail' object.urp.pk %}">{{ object.urp.title }}</a> </h2>
+            <h2><a class="article-title" href="{% url 'urp-detail' application.urp.pk %}">{{ application.urp.title }}</a> </h2>
             <div>
-                <p>Status: {{ object.status }}</p>
+                <p>Status: {{ application.status }}</p>
             </div>
         </div>
     </article>

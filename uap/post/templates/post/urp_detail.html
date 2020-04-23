@@ -4,7 +4,10 @@
         <div class="media-body">
             <div class="article-metadata">
                 <a class="mr-2" href="#">{{ urp.posted_by }}</a>
-                <small class="text-muted">{{ urp.date_posted|date:"F d, Y" }}</small>
+                <small class="text-muted mr-2">{{ urp.date_posted|date:"F d, Y" }}</small>
+                {% if request.user == urp.posted_by %}
+                    <a class="btn btn-outline-primary mr-2 mb-1" href="{% url 'urp-update' urp.pk %}">Edit</a>
+                {% endif %}
             </div>
             <h2><a class="article-title" href="#">{{ urp.title }}</a> </h2>
             <p class="article-content">{{ urp.summary }}</p>

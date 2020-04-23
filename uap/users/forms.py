@@ -34,7 +34,7 @@ class UserUpdateForm(forms.ModelForm):
         fields = ['first_name', 'last_name']
 
 
-class UapUserUpdateForm(forms.ModelForm):
+class UapStudentUpdateForm(forms.ModelForm):
     """Form for updating user's phone number, bio (self description), personal website link
 
     Attributes:
@@ -48,3 +48,12 @@ class UapUserUpdateForm(forms.ModelForm):
     class Meta:
         model = UapUser
         fields = ['phone', 'bio', 'image', 'resume', 'website']
+
+
+class UapFacultyUpdateForm(forms.ModelForm):
+    phone = forms.CharField(max_length=20, required=False)
+    bio = forms.CharField(required=False)
+    website = forms.URLField(required=False)
+    class Meta:
+        model = UapUser
+        fields = ['phone', 'bio', 'image', 'website']
