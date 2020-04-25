@@ -2,31 +2,37 @@
 ##### Django version of UAP
 
 ## Installation
-Install virtualenv if you have not already:
-At the root diretory, run `virtualenv .`
-To activate the virtual environment, run `. ./bin/activate`.
-To quit the environment, run `deactivate`
-To install the dependencies, run `python3 -m pip install -r requirements.txt`
+This installation guide assumes a macOS/Linux environment.
 
+Install virtualenv if you have not already, then activate the virtual python environment
+Install the dependencies in the virtual environment by running `python3 -m pip install -r requirements.txt`
+
+Django ships with SQLite3, which this project defaults to. If you want to switch to another database, refer to Django's website for more information.
 Set up database by running `python manage.py makemigrations`.
 Then run `python manage.py migrate`.
 
-Create super user: `python manage.py createsuperuser`
+Create super user by running `python manage.py createsuperuser`. You will be able to log in to the admin panel with this super user account.
 
-To start server, cd into /uap and run `python manage.py runserver`
+To set up the email features, set up two environment variables:
+- `EMAIL_USER`: Email address
+- `EMAIl_PASS`: Application specific password. If you do not know how to set up this, ask your email service provider for help.
 
-The server will be up at http://localhost:8000/
+The project assumes a Gmail account will be used. To switch to other email providers, change the email settings in `/uap/uap/settings.py`
+
+To start server, cd into /uap and run `python manage.py runserver`.
+
+The website will be up at http://localhost:8000/
 
 You can login to the admin panel as the super user by visiting http://localhost:8000/admin/
 ---
 
 # TODO:
-- [ ] Modify styles
+- [x] Modify styles
 - [x] Coding standard for python/django
 - [x] Database model for URP listings and projects
-- [ ] User profile pages
+- [x] User profile pages
 - [x] RTE integration
 - [ ] <del>Comments</del>
 - [x] URP creation form
-- [ ] Application features
+- [x] Application features
 
