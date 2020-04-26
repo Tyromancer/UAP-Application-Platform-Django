@@ -4,6 +4,10 @@ pyvenv.cfg
 *.png
 *.jpg
 *.pdf
+.idea/*
+.pylintrc
+*.txt
+.vscode/*
 
 # Django #
 *.log
@@ -123,3 +127,4 @@ GitHub.sublime-settings
 .history
 uap/.DS_Store
 .DS_Store
+.vscode/settings.json

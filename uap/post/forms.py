@@ -27,7 +27,7 @@ class ApplicationCreateForm(ModelForm):
     class Meta:
         model = Application
         fields = ['description']
-    
+
     description = CharField()
 
 

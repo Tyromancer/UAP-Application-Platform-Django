@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from ckeditor.fields import RichTextField
 
@@ -21,7 +20,6 @@ class URP(models.Model):
     date_posted = models.DateTimeField(default=timezone.now)
 
     # OP of URP. Currently if the author is deleted, all URPs created by the author will be deleted
-    # TODO: revise this design
     posted_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -30,13 +28,11 @@ class URP(models.Model):
     # abosolute url for URP detail page
     def get_absolute_url(self):
         return reverse("urp-detail", kwargs={"pk": self.pk})
-    
 
 
 class Application(models.Model):
 
     # use User as foreign key --> a user can have many applications
-    # FIXME: User can only have up to 1 application for a URP, need to check that in views
     applicant = models.ForeignKey(User, on_delete=models.CASCADE)
 
     # define application status
@@ -63,4 +59,3 @@ class Application(models.Model):
 
     def __str__(self):
         return f'{self.applicant.username} --{self.status}-> {self.urp.title}'
-

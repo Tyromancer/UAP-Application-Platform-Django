@@ -1,11 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.forms.models import modelform_factory
-from ckeditor.widgets import CKEditorWidget
 from .forms import URPCreateForm, URPUpdateForm, ApplicationCreateForm, ApplicationManageForm
 from .models import URP, Application
 
@@ -52,13 +47,13 @@ def urp_update_view(request, pk):
     if request.user.uapuser.is_student:
         messages.warning(request, 'You do not have the permission to view this page')
         return redirect('uap-home')
-    
+
     urp = get_object_or_404(URP, pk=pk)
 
     if urp.posted_by != request.user:
         messages.warning(request, 'You do not have the permission to view this page')
         return redirect('uap-home')
-    
+
     if request.method == 'POST':
         form = URPUpdateForm(request.POST)
         if form.is_valid():
@@ -67,17 +62,16 @@ def urp_update_view(request, pk):
             urp.description = form.cleaned_data['description']
 
             urp.save()
-            
+
             messages.success(request, 'URP updated')
             return redirect('urp-detail', pk=urp.id)
 
-    else:
-        form = URPUpdateForm(instance=urp)
-        ctx = { 
-            'form': form,
-            'id': pk,
-         }
-        return render(request, 'post/urp_update.html', context=ctx)
+    form = URPUpdateForm(instance=urp)
+    ctx = {
+        'form': form,
+        'id': pk,
+    }
+    return render(request, 'post/urp_update.html', context=ctx)
 
 
 
@@ -98,13 +92,13 @@ def urp_create_view(request):
 
             messages.success(request, 'URP created')
             return redirect('urp-detail', pk=urp.pk)
-        else:
-            messages.warning(request, 'Error when creating URP')
-            return redirect('urp-create')
-    
+
+        messages.warning(request, 'Error when creating URP')
+        return redirect('urp-create')
+
     form = URPCreateForm()
     return render(request, 'post/urp_create.html', context={'form':form})
-    
+
 
 @login_required
 def application_detail_view(request, pk):
@@ -130,7 +124,7 @@ def application_create(request, pk):
 
     urp = get_object_or_404(URP, pk=pk)
     user = request.user
-    
+
     if request.method == "POST":
         form = ApplicationCreateForm(request.POST)
         if form.is_valid():
@@ -147,7 +141,7 @@ def application_create(request, pk):
             return redirect(f'urp-detail', pk=urp.pk)
     else:
         form = ApplicationCreateForm()
-    
+
     return render(request, 'post/application_create.html', {'form':form})
 
 
@@ -188,7 +182,7 @@ def view_my_urps(request):
         num_accepted = len(Application.objects.filter(urp=urp, status=Application.ACCEPTED))
         num_rejected = len(Application.objects.filter(urp=urp, status=Application.REJECTED))
         result.append( ( urp, num_active, num_accepted, num_rejected ) )
-    
+
     ctx = {
         'urps': result
     }
@@ -265,7 +259,7 @@ def view_and_manage_application(request, pk):
     if request.user.uapuser.is_student:
         messages.warning(request, 'You do not have the permissions to view this page')
         return redirect('uap-home')
-    
+
     application = get_object_or_404(Application, pk=pk)
 
     if request.method == 'POST':

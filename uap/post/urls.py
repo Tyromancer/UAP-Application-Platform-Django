@@ -1,7 +1,8 @@
 from django.urls import path
-from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+
+from . import views
 from .views import urp_create_view, urp_update_view, application_detail_view, application_create, application_status, view_my_urps, view_active_applications, view_and_manage_application, view_accepted_applications, view_rejected_applications, urp_detail_view
 
 
